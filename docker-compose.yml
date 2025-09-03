@@ -1,0 +1,123 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports: ["3306:3306"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    volumes: ["pg-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  api-gateway:
+    build: ./apps/api-gateway
+    env_file: .env
+    ports: ["3000:3000"]
+    depends_on:
+      - auth
+      - inventory1
+      - inventory2
+      - suppliers
+      - customers
+      - billing1
+      - billing2
+
+  auth:
+    build: ./apps/auth
+    env_file: .env
+    environment:
+      - TCP_PORT=4000
+      - DATABASE_URL=${AUTH_DB_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  inventory1:
+    build: ./apps/inventory
+    env_file: .env
+    environment:
+      - TCP_PORT=4011
+      - DATABASE_URL=${INVENTORY_DB_URL}
+      - TYPEORM_SYNC=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  inventory2:
+    build: ./apps/inventory
+    env_file: .env
+    environment:
+      - TCP_PORT=4012
+      - DATABASE_URL=${INVENTORY_DB_URL}
+      - TYPEORM_SYNC=false 
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  suppliers:
+    build: ./apps/suppliers
+    env_file: .env
+    environment:
+      - TCP_PORT=4021
+      - DATABASE_URL=${SUPPLIERS_DB_URL}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  customers:
+    build: ./apps/customers
+    env_file: .env
+    environment:
+      - TCP_PORT=4031
+      - DATABASE_URL=${CUSTOMERS_DB_URL}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  billing1:
+    build: ./apps/billing
+    env_file: .env
+    environment:
+      - TCP_PORT=4041
+      - INVENTORY_HOST=inventory1
+      - INVENTORY_PORT=4011
+      - DATABASE_URL=${BILLING_DB_URL}
+      - TYPEORM_SYNC=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  billing2:
+    build: ./apps/billing
+    env_file: .env
+    environment:
+      - TCP_PORT=4042
+      - INVENTORY_HOST=inventory2
+      - INVENTORY_PORT=4012
+      - DATABASE_URL=${BILLING_DB_URL}
+      - TYPEORM_SYNC=false
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql-data:
+  pg-data:

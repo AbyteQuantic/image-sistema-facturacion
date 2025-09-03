@@ -1,0 +1,56 @@
+# --- Node / NPM ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.cache/
+
+# --- TypeScript / Nest ---
+dist/
+build/
+*.tsbuildinfo
+apps/**/dist/
+apps/**/node_modules/
+
+# --- Tests / Cobertura ---
+coverage/
+.jest-cache/
+jest-*.html
+*.lcov
+
+# --- Logs ---
+logs/
+*.log
+*.log.*
+
+# --- Entornos (NO subir secretos) ---
+.env
+.env.*
+!.env.example
+
+# --- DB / Dumps locales ---
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.sql
+!docker/mysql-init/*.sql     # EXCEPCIÓN: sí subimos los SQL de inicialización
+
+# --- SO / IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# --- Docker (archivos locales opcionales) ---
+docker-compose.override.yml
+# Si tienes carpetas locales de datos, ignóralas:
+data/
+**/pg-data/
+**/mysql-data/
+
+# --- Varias ---
+*.local
