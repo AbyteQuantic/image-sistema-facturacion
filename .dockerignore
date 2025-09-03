@@ -1,0 +1,38 @@
+# --- VCS / repo ---
+.git
+.gitignore
+
+# --- Node monorepo (no enviar dependencias ni builds al contexto) ---
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+coverage/
+**/coverage/
+logs/
+**/*.log
+
+# --- Archivos de entorno (no copiar secretos al build) ---
+.env
+.env.*
+
+# --- SO / IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Archivos de desarrollo que no necesita la imagen ---
+docker-compose*.yml
+scripts/
+docs/
+
+# --- Bases de datos/Dumps locales ---
+**/*.sqlite
+**/*.db
+**/*.db-journal
+
+# Mantener lockfiles para builds reproducibles (NO ignorar)
+!package-lock.json
+!pnpm-lock.yaml
+!yarn.lock
