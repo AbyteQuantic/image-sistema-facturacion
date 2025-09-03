@@ -1,0 +1,34 @@
+# --- Node/Nest: evitar enviar cosas pesadas/innecesarias ---
+node_modules
+dist
+coverage
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# --- Tests (no se requieren para compilar la imagen) ---
+test
+tests
+**/*.spec.ts
+**/*.e2e-spec.ts
+
+# --- Entornos ---
+.env
+.env.*
+
+# --- SO / IDE ---
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# --- Repo / orquestación (no necesarios dentro de la imagen de esta app) ---
+.git
+.gitignore
+docker-compose*.yml
+
+# IMPORTANTE: No ignores el Dockerfile ni los manifests de compilación
+# (package.json, package-lock.json, tsconfigs, nest-cli.json, src/)
+# por eso no ponemos reglas que los excluyan
